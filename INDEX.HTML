@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Des leçons de grammaire, syntaxe, orthographe et littérature, avec des jeux interactifs pour progresser au collège.">
+    <meta name="theme-color" content="#4f46e5">
+    <title>Français au collège — Apprendre en s'amusant</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --primaire: #4f46e5;
+            --primaire-fonce: #3730a3;
+            --secondaire: #f59e0b;
+            --fond: #f3f4f6;
+            --texte: #1f2937;
+            --blanc: #fff;
+            --succes: #047857;
+            --erreur: #b91c1c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 6rem;
+        }
+
+        body {
+            margin: 0;
+            background: var(--fond);
+            color: var(--texte);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--primaire-fonce);
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid #111827;
+            outline-offset: 3px;
+        }
+
+        .entete {
+            position: sticky;
+            z-index: 10;
+            top: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem 1.5rem;
+            padding: 0.8rem max(1.25rem, calc((100% - 1100px) / 2));
+            background: var(--blanc);
+            box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
+        }
+
+        .logo {
+            color: var(--primaire-fonce);
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.25rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        nav a {
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: clamp(3.5rem, 9vw, 6rem) 1.25rem;
+            background: linear-gradient(135deg, var(--primaire), #7c3aed);
+            color: var(--blanc);
+            text-align: center;
+        }
+
+        .hero-contenu {
+            position: relative;
+            z-index: 1;
+            max-width: 760px;
+            margin: 0 auto;
+            animation: apparition 700ms ease-out both;
+        }
+
+        .hero h1 {
+            margin: 0 0 1rem;
+            font-size: clamp(2rem, 6vw, 3.25rem);
+            line-height: 1.15;
+        }
+
+        .hero p {
+            max-width: 620px;
+            margin: 0 auto 1.75rem;
+            font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+        }
+
+        .bulle {
+            position: absolute;
+            width: 120px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: rgb(255 255 255 / 12%);
+            animation: flotter 6s ease-in-out infinite;
+        }
+
+        .bulle-1 {
+            top: 8%;
+            left: 8%;
+        }
+
+        .bulle-2 {
+            right: 12%;
+            bottom: 4%;
+            width: 170px;
+            animation-delay: 1.5s;
+        }
+
+        .bouton-principal {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 999px;
+            background: var(--secondaire);
+            color: #1f2937;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .bouton-principal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
+        }
+
+        .conteneur {
+            width: min(100% - 2.5rem, 1100px);
+            margin: 0 auto;
+            padding: 3.5rem 0 0;
+        }
+
+        .titre-section {
+            margin: 0 0 2rem;
+            color: var(--primaire-fonce);
+            font-size: clamp(1.6rem, 4vw, 2rem);
+            text-align: center;
+        }
+
+        .grille-cours {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+            gap: 1.25rem;
+        }
+
+        .carte-cours {
+            padding: 1.5rem;
+            border-top: 5px solid var(--primaire);
+            border-radius: 15px;
+            background: var(--blanc);
+            box-shadow: 0 4px 15px rgb(0 0 0 / 5%);
+            transition: transform 180ms ease, box-shadow 180ms ease;
+        }
+
+        .carte-cours:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgb(0 0 0 / 10%);
+        }
+
+        .icone-cours {
+            display: inline-grid;
+            width: 3.5rem;
+            height: 3.5rem;
+            place-items: center;
+            margin: 0 0 0.75rem;
+            border: 0;
+            border-radius: 12px;
+            background: #eef2ff;
+            color: inherit;
+            cursor: pointer;
+            line-height: 1;
+            transition: transform 160ms ease, background-color 160ms ease;
+        }
+
+        .icone-cours:hover,
+        .icone-cours[aria-expanded="true"] {
+            transform: scale(1.08);
+            background: #e0e7ff;
+        }
+
+        .icone-cours span {
+            pointer-events: none;
+        }
+
+        .icone-cours {
+            margin-bottom: 0.5rem;
+            font-size: 2.25rem;
+        }
+
+        .badge-niveau {
+            display: inline-block;
+            margin-bottom: 0.75rem;
+            padding: 0.15rem 0.65rem;
+            border-radius: 999px;
+            background: #e0e7ff;
+            color: var(--primaire-fonce);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .carte-cours h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .carte-cours p {
+            margin: 0;
+        }
+
+        .aide-cours {
+            margin: -1rem 0 1.5rem;
+            color: #4b5563;
+            text-align: center;
+        }
+
+        .explication-cours {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background: #f5f3ff;
+        }
+
+        .explication-cours h4 {
+            margin: 0 0 0.35rem;
+            color: var(--primaire-fonce);
+        }
+
+        .liste-lecons {
+            display: grid;
+            gap: 0.5rem;
+            margin: 0.75rem 0 0;
+            padding-left: 1.5rem;
+        }
+
+        .liste-lecons details {
+            padding: 0.65rem 0.75rem;
+            border-radius: 8px;
+            background: var(--blanc);
+        }
+
+        .liste-lecons summary {
+            color: var(--primaire-fonce);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .liste-lecons p {
+            margin: 0.5rem 0 0;
+            overflow-wrap: anywhere;
+            font-size: 0.95rem;
+        }
+
+        .zone-quiz {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: clamp(1.25rem, 5vw, 2.5rem);
+            border-radius: 20px;
+            background: var(--blanc);
+            box-shadow: 0 10px 30px rgb(0 0 0 / 8%);
+            text-align: center;
+        }
+
+        .grille-jeux {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+            gap: 1.25rem;
+        }
+
+        .grille-jeux .zone-quiz {
+            max-width: none;
+            margin: 0;
+        }
+
+        .question-texte {
+            margin: 0 0 1.25rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .options-grille {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .btn-option,
+        .btn-quiz {
+            min-height: 48px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            background: var(--fond);
+            color: var(--texte);
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            border-color: var(--primaire);
+            background: #eef2ff;
+        }
+
+        .btn-option:disabled {
+            cursor: default;
+        }
+
+        .btn-option.correcte {
+            border-color: var(--succes);
+            background: #ecfdf5;
+            color: var(--succes);
+        }
+
+        .btn-option.incorrecte {
+            border-color: var(--erreur);
+            background: #fef2f2;
+            color: var(--erreur);
+        }
+
+        .resultat-quiz {
+            min-height: 1.75rem;
+            margin: 1rem 0;
+            font-weight: 700;
+        }
+
+        .resultat-quiz[data-type="succes"] {
+            color: var(--succes);
+        }
+
+        .resultat-quiz[data-type="erreur"] {
+            color: var(--erreur);
+        }
+
+        .btn-quiz {
+            border-color: var(--primaire);
+            background: var(--primaire);
+            color: var(--blanc);
+        }
+
+        .btn-quiz:hover {
+            background: var(--primaire-fonce);
+        }
+
+        .btn-quiz[hidden] {
+            display: none;
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 1.25rem;
+            background: var(--texte);
+            color: var(--blanc);
+            text-align: center;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        @keyframes apparition {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes flotter {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-16px); }
+        }
+
+        @media (max-width: 600px) {
+            .entete {
+                justify-content: center;
+                padding: 0.75rem 1rem;
+            }
+
+            nav ul {
+                justify-content: center;
+                gap: 0.35rem 1rem;
+            }
+
+            .options-grille {
+                grid-template-columns: 1fr;
+            }
+
+            .bulle {
+                width: 75px;
+            }
+
+            .bulle-2 {
+                width: 100px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="entete">
+        <a class="logo" href="#accueil"><span aria-hidden="true">📽️</span> Français au collège</a>
+        <nav aria-label="Navigation principale">
+            <ul>
+                <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#cours">Les cours</a></li>
+                <li><a href="#jeux">Jeux</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="accueil" class="hero" aria-labelledby="titre-principal">
+            <div class="bulle bulle-1" aria-hidden="true"></div>
+            <div class="bulle bulle-2" aria-hidden="true"></div>
+            <div class="hero-contenu">
+                <h1 id="titre-principal">Maîtrise le français au collège&nbsp;!</h1>
+                <p>Des leçons faciles à comprendre et des jeux pour progresser en français, de la 6e à la 3e.</p>
+                <a class="bouton-principal" href="#cours">Découvrir les cours</a>
+            </div>
+        </section>
+
+        <section id="cours" class="conteneur" aria-labelledby="titre-cours">
+            <h2 id="titre-cours" class="titre-section">Les cours de français</h2>
+            <p class="aide-cours">Clique sur l'icône d'une matière, puis sur une leçon pour lire son explication.</p>
+            <div class="grille-cours">
+                <article class="carte-cours">
+                    <button class="icone-cours" type="button" aria-label="Afficher les 6 leçons de grammaire" aria-expanded="false" aria-controls="lecon-grammaire" data-matiere="grammaire"><span aria-hidden="true">✍️</span></button>
+                    <span class="badge-niveau">6e - 5e</span>
+                    <h3>Grammaire</h3>
+                    <p>Reconnais les classes de mots et leur rôle dans la phrase.</p>
+                    <div class="explication-cours" id="lecon-grammaire" hidden>
+                        <h4>Les 6 leçons</h4>
+                        <ol class="liste-lecons"></ol>
+                    </div>
+                </article>
+                <article class="carte-cours">
+                    <button class="icone-cours" type="button" aria-label="Afficher les 6 leçons de syntaxe" aria-expanded="false" aria-controls="lecon-syntaxe" data-matiere="syntaxe"><span aria-hidden="true">🧩</span></button>
+                    <span class="badge-niveau">6e - 3e</span>
+                    <h3>Syntaxe</h3>
+                    <p>Construis des phrases claires et repère leurs principaux groupes.</p>
+                    <div class="explication-cours" id="lecon-syntaxe" hidden>
+                        <h4>Les 6 leçons</h4>
+                        <ol class="liste-lecons"></ol>
+                    </div>
+                </article>
+                <article class="carte-cours">
+                    <button class="icone-cours" type="button" aria-label="Afficher les 6 leçons d'orthographe" aria-expanded="false" aria-controls="lecon-orthographe" data-matiere="orthographe"><span aria-hidden="true">🔤</span></button>
+                    <span class="badge-niveau">6e - 3e</span>
+                    <h3>Orthographe</h3>
+                    <p>Entraîne-toi aux accords et aux homophones fréquents.</p>
+                    <div class="explication-cours" id="lecon-orthographe" hidden>
+                        <h4>Les 6 leçons</h4>
+                        <ol class="liste-lecons"></ol>
+                    </div>
+                </article>
+                <article class="carte-cours">
+                    <button class="icone-cours" type="button" aria-label="Afficher les 6 leçons de conjugaison" aria-expanded="false" aria-controls="lecon-conjugaison" data-matiere="conjugaison"><span aria-hidden="true">⏳</span></button>
+                    <span class="badge-niveau">Tous niveaux</span>
+                    <h3>Conjugaison</h3>
+                    <p>Choisis le temps du verbe selon le moment et le sens de la phrase.</p>
+                    <div class="explication-cours" id="lecon-conjugaison" hidden>
+                        <h4>Les 6 leçons</h4>
+                        <ol class="liste-lecons"></ol>
+                    </div>
+                </article>
+                <article class="carte-cours">
+                    <button class="icone-cours" type="button" aria-label="Afficher les 6 leçons de poésie" aria-expanded="false" aria-controls="lecon-poesie" data-matiere="poesie"><span aria-hidden="true">🎭</span></button>
+                    <span class="badge-niveau">6e - 3e</span>
+                    <h3>Poésie</h3>
+                    <p>Découvre les vers, les strophes, les rimes et les images poétiques.</p>
+                    <div class="explication-cours" id="lecon-poesie" hidden>
+                        <h4>Les 6 leçons</h4>
+                        <ol class="liste-lecons"></ol>
+                    </div>
+                </article>
+                <article class="carte-cours">
+                    <button class="icone-cours" type="button" aria-label="Afficher les 6 leçons sur le conte populaire" aria-expanded="false" aria-controls="lecon-conte" data-matiere="conte"><span aria-hidden="true">🏰</span></button>
+                    <span class="badge-niveau">6e - 5e</span>
+                    <h3>Conte populaire</h3>
+                    <p>Explore les récits transmis, leurs personnages et leurs éléments merveilleux.</p>
+                    <div class="explication-cours" id="lecon-conte" hidden>
+                        <h4>Les 6 leçons</h4>
+                        <ol class="liste-lecons"></ol>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="jeux" class="conteneur" aria-labelledby="titre-jeux">
+            <h2 id="titre-jeux" class="titre-section">Les jeux de français</h2>
+            <div class="grille-jeux">
+                <div class="zone-quiz" data-quiz="francais">
+                    <h3>🎯 Quiz de français</h3>
+                    <p id="question-francais" class="question-texte"></p>
+                    <div class="options-grille" role="group" aria-labelledby="question-francais"></div>
+                    <p class="resultat-quiz" aria-live="polite"></p>
+                    <button class="btn-quiz" type="button" hidden>Question suivante</button>
+                </div>
+                <div class="zone-quiz" data-quiz="orthographe">
+                    <h3>🕵️ Défi orthographe</h3>
+                    <p id="question-orthographe" class="question-texte"></p>
+                    <div class="options-grille" role="group" aria-labelledby="question-orthographe"></div>
+                    <p class="resultat-quiz" aria-live="polite"></p>
+                    <button class="btn-quiz" type="button" hidden>Question suivante</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Français au collège — Cours préparés par Prof. Abdou.</p>
+    </footer>
+
+    <script>
+        (() => {
+            const leconsParMatiere = {
+                grammaire: [
+                    { titre: "Le nom commun et le nom propre", texte: "Le nom commun désigne une personne, un animal ou une chose en général : « ville ». Le nom propre désigne un nom particulier et prend une majuscule : « Dakar »." },
+                    { titre: "Les déterminants", texte: "Le déterminant accompagne le nom et s'accorde avec lui. Exemples : « un cahier », « cette grande maison », « mes amis »." },
+                    { titre: "L'adjectif qualificatif", texte: "L'adjectif donne une précision sur un nom et s'accorde en genre et en nombre : « un chat noir », « des chattes noires »." },
+                    { titre: "Les pronoms personnels", texte: "Le pronom personnel peut remplacer un nom ou un groupe nominal pour éviter une répétition : « Awa lit. Elle aime les romans. »" },
+                    { titre: "Le verbe", texte: "Le verbe exprime souvent une action ou un état. Il se conjugue selon le sujet : « je joue », « nous jouons ». Son infinitif est « jouer »." },
+                    { titre: "Nature et fonction", texte: "La nature est la classe d'un mot; la fonction est son rôle dans la phrase. Dans « Le chien aboie », « chien » est un nom (nature) et le sujet du verbe (fonction)." }
+                ],
+                syntaxe: [
+                    { titre: "La phrase simple", texte: "Une phrase commence par une majuscule et se termine par une ponctuation. Une phrase simple contient un seul verbe conjugué : « Le vent souffle. »" },
+                    { titre: "Le sujet et le verbe", texte: "Le sujet indique qui fait l'action ou de qui l'on parle. Pour le trouver, demande « Qui est-ce qui… ? » : « Les élèves chantent » — qui chante ? Les élèves." },
+                    { titre: "Le complément d'objet direct (COD)", texte: "Le COD complète le verbe sans préposition. Il répond souvent à « qui ? » ou « quoi ? » : « Mariam prépare un gâteau » — elle prépare quoi ? Un gâteau." },
+                    { titre: "Le complément d'objet indirect (COI)", texte: "Le COI est relié au verbe par une préposition comme « à » ou « de ». Dans « Il parle à son ami », « à son ami » est le COI." },
+                    { titre: "Les types de phrases", texte: "La phrase peut être déclarative (elle informe), interrogative (elle pose une question), exclamative (elle exprime une émotion) ou injonctive (elle donne un ordre ou un conseil)." },
+                    { titre: "La phrase complexe et les connecteurs", texte: "Une phrase complexe contient plusieurs verbes conjugués. Des mots comme « mais », « parce que » ou « quand » relient les idées : « Je lis parce que j'aime les histoires. »" }
+                ],
+                orthographe: [
+                    { titre: "« a » ou « à » ?", texte: "« A » est le verbe avoir et peut souvent être remplacé par « avait » : « Il a un livre ». « À » est une préposition : « Elle va à l'école »." },
+                    { titre: "« et » ou « est » ?", texte: "« Et » relie des mots ou des idées et peut être remplacé par « et puis ». « Est » est le verbe être et peut être remplacé par « était »." },
+                    { titre: "« son » ou « sont » ?", texte: "« Son » est un déterminant possessif : « son sac ». « Sont » est le verbe être et peut être remplacé par « étaient » : « Ils sont prêts »." },
+                    { titre: "L'accord du verbe avec le sujet", texte: "Le verbe s'accorde avec son sujet en personne et en nombre. Repère le sujet, puis vérifie la terminaison : « Les enfants jouent »." },
+                    { titre: "L'accord de l'adjectif", texte: "L'adjectif s'accorde en genre et en nombre avec le nom qu'il précise : « un arbre vert », « des feuilles vertes »." },
+                    { titre: "Le participe passé avec « être »", texte: "Avec l'auxiliaire « être », le participe passé s'accorde généralement avec le sujet : « Elle est partie », « Ils sont partis »." }
+                ],
+                conjugaison: [
+                    { titre: "L'infinitif et les groupes", texte: "L'infinitif est la forme non conjuguée du verbe. Les verbes en « -er » (sauf « aller ») appartiennent au premier groupe; « finir » est un verbe du deuxième groupe." },
+                    { titre: "Le présent des verbes en « -er »", texte: "Au présent, « chanter » se conjugue : je chante, tu chantes, il chante, nous chantons, vous chantez, ils chantent." },
+                    { titre: "L'imparfait", texte: "L'imparfait sert souvent à décrire ou à parler d'une habitude passée. Ses terminaisons sont -ais, -ais, -ait, -ions, -iez, -aient : « nous jouions »." },
+                    { titre: "Le futur simple", texte: "Le futur simple annonce une action à venir. Pour beaucoup de verbes, on ajoute -ai, -as, -a, -ons, -ez, -ont à l'infinitif : « demain, je chanterai »." },
+                    { titre: "Le passé composé", texte: "Le passé composé se forme avec l'auxiliaire « avoir » ou « être » au présent et un participe passé : « j'ai fini », « elle est arrivée »." },
+                    { titre: "Le passé simple", texte: "Le passé simple apparaît surtout dans les récits écrits. Apprends à reconnaître les formes courantes : « il parla », « elle finit », « il prit »." }
+                ],
+                poesie: [
+                    { titre: "Le vers", texte: "Un vers est une ligne d'un poème. Le retour à la ligne compte : un texte présenté en lignes n'est pas forcément un poème, il faut aussi observer son rythme et ses effets." },
+                    { titre: "La strophe", texte: "Une strophe est un groupe de vers séparé des autres par un espace. Un tercet compte trois vers; un quatrain en compte quatre." },
+                    { titre: "Les syllabes et le rythme", texte: "Compter les syllabes aide à entendre le rythme d'un vers. Lis-le à voix haute et écoute les sons; certaines règles de prononciation, comme le « e » muet, demandent de l'attention." },
+                    { titre: "Les rimes", texte: "Les rimes répètent des sons à la fin de plusieurs vers. Leur disposition peut former des rimes suivies (AABB) ou croisées (ABAB)." },
+                    { titre: "Comparaison et métaphore", texte: "La comparaison rapproche deux éléments avec un outil comme « tel » ou « comme » : « rapide comme l'éclair ». La métaphore fait ce rapprochement sans outil : « cet enfant est un éclair »." },
+                    { titre: "Allitération et assonance", texte: "L'allitération répète un son consonne; l'assonance répète un son voyelle. Ces répétitions donnent une musique au poème." }
+                ],
+                conte: [
+                    { titre: "Le conte populaire", texte: "Le conte populaire est un récit transmis au fil du temps, souvent d'abord à l'oral. Il peut exister en plusieurs versions selon les conteurs et les régions." },
+                    { titre: "Les formules d'ouverture et de fin", texte: "« Il était une fois » ouvre souvent un conte et le situe dans un temps éloigné. Une formule finale peut signaler que l'histoire est terminée." },
+                    { titre: "Les personnages", texte: "Le héros ou l'héroïne affronte des épreuves. Il peut recevoir l'aide d'un adjuvant et rencontrer un opposant qui lui complique la tâche." },
+                    { titre: "Les étapes du récit", texte: "Repère la situation de départ, l'événement qui lance l'histoire, les épreuves, la résolution et la situation finale." },
+                    { titre: "Le merveilleux", texte: "Dans un conte merveilleux, la magie est acceptée comme faisant partie de l'histoire : objets enchantés, transformations ou animaux qui parlent." },
+                    { titre: "La morale et le message", texte: "Certains contes proposent une morale ou invitent à réfléchir à une valeur. Demande-toi ce que les choix et le destin des personnages apprennent au lecteur." }
+                ]
+            };
+
+            const questionsParJeu = {
+                francais: [
+                    { question: "Dans « Le petit chat dort », quel mot est un adjectif ?", choix: ["chat", "petit", "dort", "le"], reponse: 1 },
+                    { question: "Quel est le sujet dans « Demain, Lina lira un conte » ?", choix: ["Demain", "Lina", "lira", "un conte"], reponse: 1 },
+                    { question: "Comment appelle-t-on une ligne de poème ?", choix: ["Un vers", "Une strophe", "Une rime", "Un paragraphe"], reponse: 0 },
+                    { question: "Quel début est souvent utilisé dans un conte traditionnel ?", choix: ["Tout de suite", "Il était une fois", "À demain", "En conclusion"], reponse: 1 }
+                ],
+                orthographe: [
+                    { question: "Complète : « Il ___ un nouveau cahier. »", choix: ["à", "a"], reponse: 1 },
+                    { question: "Complète : « Nous allons ___ la bibliothèque. »", choix: ["a", "à"], reponse: 1 },
+                    { question: "Quelle phrase est correctement écrite ?", choix: ["Les filles sont arrivé.", "Les filles sont arrivées."], reponse: 1 }
+                ]
+            };
+
+            document.querySelectorAll("[data-quiz]").forEach((zone) => {
+                const questions = questionsParJeu[zone.dataset.quiz];
+                const questionElement = zone.querySelector(".question-texte");
+                const optionsElement = zone.querySelector(".options-grille");
+                const resultatElement = zone.querySelector(".resultat-quiz");
+                const boutonQuiz = zone.querySelector(".btn-quiz");
+                let indexQuestion = 0;
+                let score = 0;
+
+                function afficherQuestion() {
+                    const question = questions[indexQuestion];
+                    questionElement.textContent = question.question;
+                    optionsElement.replaceChildren();
+                    resultatElement.textContent = "";
+                    resultatElement.removeAttribute("data-type");
+                    boutonQuiz.hidden = true;
+
+                    question.choix.forEach((choix, index) => {
+                        const bouton = document.createElement("button");
+                        bouton.className = "btn-option";
+                        bouton.type = "button";
+                        bouton.textContent = choix;
+                        bouton.addEventListener("click", () => verifierReponse(index));
+                        optionsElement.append(bouton);
+                    });
+                }
+
+                function verifierReponse(indexChoisi) {
+                    const question = questions[indexQuestion];
+                    const boutons = optionsElement.querySelectorAll("button");
+                    const estCorrect = indexChoisi === question.reponse;
+
+                    boutons.forEach((bouton, index) => {
+                        bouton.disabled = true;
+                        if (index === question.reponse) {
+                            bouton.classList.add("correcte");
+                        } else if (index === indexChoisi) {
+                            bouton.classList.add("incorrecte");
+                        }
+                    });
+
+                    if (estCorrect) {
+                        score += 1;
+                        resultatElement.textContent = "Bonne réponse !";
+                        resultatElement.dataset.type = "succes";
+                    } else {
+                        resultatElement.textContent = `Pas tout à fait. La bonne réponse était : ${question.choix[question.reponse]}.`;
+                        resultatElement.dataset.type = "erreur";
+                    }
+
+                    const derniereQuestion = indexQuestion === questions.length - 1;
+                    if (derniereQuestion) {
+                        resultatElement.textContent += ` Jeu terminé : ${score}/${questions.length} bonnes réponses.`;
+                    }
+                    boutonQuiz.textContent = derniereQuestion ? "Recommencer" : "Question suivante";
+                    boutonQuiz.hidden = false;
+                }
+
+                boutonQuiz.addEventListener("click", () => {
+                    if (indexQuestion === questions.length - 1) {
+                        indexQuestion = 0;
+                        score = 0;
+                    } else {
+                        indexQuestion += 1;
+                    }
+                    afficherQuestion();
+                });
+
+                afficherQuestion();
+            });
+
+            document.querySelectorAll(".icone-cours").forEach((bouton) => {
+                bouton.addEventListener("click", () => {
+                    const lecon = document.getElementById(bouton.getAttribute("aria-controls"));
+                    const ouverture = bouton.getAttribute("aria-expanded") !== "true";
+                    const listeLecons = lecon.querySelector(".liste-lecons");
+
+                    if (ouverture && listeLecons.childElementCount === 0) {
+                        leconsParMatiere[bouton.dataset.matiere].forEach((cours, index) => {
+                            const element = document.createElement("li");
+                            const details = document.createElement("details");
+                            const titre = document.createElement("summary");
+                            const explication = document.createElement("p");
+
+                            titre.textContent = `Leçon ${index + 1} : ${cours.titre}`;
+                            explication.textContent = cours.texte;
+                            details.append(titre, explication);
+                            element.append(details);
+                            listeLecons.append(element);
+                        });
+                    }
+
+                    bouton.setAttribute("aria-expanded", String(ouverture));
+                    lecon.hidden = !ouverture;
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
